@@ -1,0 +1,337 @@
+\documentclass[fontset=mac]{ctexart}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{booktabs} %处理三线表
+\geometry{a4paper,scale=0.8}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\setlength{\parindent}{0pt}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}  % Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{\textbf{Output:}} % Use Output in the format of Algorithm
+
+\title{非光滑优化算法}
+\author{于冰冰 21901037 数硕1903}
+\date{\today}
+
+\begin{document}
+	\maketitle
+	\tableofcontents
+	\newpage 
+	\section{第一题}
+	计算函数$f:\mathfrak{R}^n \to \bar{\mathfrak{R}}$的邻近映射(proximal mapping):
+	\begin{itemize}
+		\item $f(X)=\|X\|_*$ 是$X \in \mathbb{S}^n$ 的核范数；
+		\item $f(X) = \delta_C^*(x) = max_{y \in C}<y,x>$, 其中$C$为闭凸集合；
+		\item $f(x)=\inf _{y \in C}\|x-y\|_{2}$， 其中$C$为闭凸集合。
+	\end{itemize}
+	
+	\subsection{}
+	核范数(迹范数)定义为：
+	\begin{equation}
+		\|X\|_* = \sum_{i=1}^{r} \sigma_i(X)
+	\end{equation}
+	
+	$\mathbb{S}^n$ 定义为全体$n \times n$ 对称矩阵：
+	\begin{equation}
+	\mathbb{S}^{n}=\left\{\mathbf{A} \in \mathbb{R}^{n \times n}: \mathbf{A}=\mathbf{A}^{T}\right\}
+	\end{equation}
+	
+	假定$X$的奇异值分解为：
+	$$
+	X = Udiag(\lambda (X))U^T
+	$$
+	
+	首先有$\mathbb{S}^n$ 上的谱邻近公式：\\
+	假定$F:\mathbb{S} \to \left. \left(-\infty,\infty \right. \right]$ 由$F = f \circ \lambda$ 给定，其中$f: \mathbb{R}^n \to \left. \left( -\infty, \infty \right. \right]$ 为置换对称的闭包凸函数，假定$X = Udiag(\lambda (X))U^T$，其中$U \in \mathbb{O}$, 则有：
+	\begin{equation}
+	\operatorname{prox}_{F}(X)={Udiag}\left(\operatorname{prox}_{f}({\lambda}({X}))\right) {U}^{T}
+	\end{equation}
+	
+	\begin{proof}
+		首先有：
+		\begin{equation}
+			\operatorname{prox}_{F}({X})=\operatorname{argmin}_{{Z} \in \mathbb{S}^{n}}\left\{F({Z})+\frac{1}{2}\|{Z}-{X}\|_{F}^{2}\right\} \label{7.3}
+		\end{equation}
+		记$D$为$D=diag(\lambda(X))$，注意到对于任意$Z \in \mathbb{S}^n$:
+		\begin{equation}
+			F({Z})+\frac{1}{2}\|{Z}-{X}\|_{F}^{2}=F({Z})+\frac{1}{2}\left\|{Z}-{U} {D} {U}^{T}\right\|_{F}^{2} \stackrel{(*)}{=} F\left({U}^{T} {Z} {U}\right)+\frac{1}{2}\left\|{U}^{T} {Z} {U}-{D}\right\|_{F}^{2}
+		\end{equation}
+		其中的转换$(*)$ 是由于$F(Z)=f(\lambda(Z))=f(\lambda(U^TZU))=F(U^TZU)$, 记$W = U^TZU$， 在$W$ 发生变化时，可以得到(\ref{7.3}) 的最优解由下式给定：
+		\begin{equation}
+			Z = UW^*U^T \label{7.4}
+		\end{equation}
+		其中$W^* \in \mathbb{S}^n$ 为下式的最优解：
+		\begin{equation}
+			\min _{{W} \in \mathbb{S}^{n}}\left\{G({W}) \equiv F({W})+\frac{1}{2}\|{W}-{D}\|_{F}^{2}\right\}、\label{7.5}
+		\end{equation}
+		接下来我们证明$W^*$为对角阵，令$i \in \{1,2,\cdots,n\}$. 记$V_i$ 为如下的对角阵:在除$(i,i)$处的对角线上为1，在$(i,i)$处为$-1$。我们定义$\widetilde{{W}}_{i}={V}_{i} {W}^{*} {V}_{i}^{T}$。 由于$V_i \in \mathbb{O}^n$，显然有：
+		\begin{equation}
+			F(V_iW^*V_i^T) = f(\lambda(V_iW^*V_i^T) = f(\lambda(W^*)) =F(W^*)
+		\end{equation}
+		于是我们得到：
+		\begin{equation}
+			\begin{aligned}
+				G\left(\widetilde{{W}}_{i}\right) &=F\left(\widetilde{{W}}_{i}\right)+\frac{1}{2}\left\|\widetilde{{W}}_{i}-{D}\right\|_{F}^{2} \\
+				&=F\left({V}_{i} {W}^{*} {V}_{i}^{T}\right)+\frac{1}{2}\left\|{V}_{i} {W}^{*} {V}_{i}^{T}-{D}\right\|_{F}^{2} \\
+				&=F\left({W}^{*}\right)+\frac{1}{2}\left\|{W}^{*}-{V}_{i}^{T} {D} {V}_{i}\right\|_{F}^{2} \\
+				& \stackrel{* *}{=} F\left({W}^{*}\right)+\frac{1}{2}\left\|{W}^{*}-{D}\right\|_{F}^{2} \\
+				&=G\left({W}^{*}\right)
+			\end{aligned}
+		\end{equation}
+		这里的$(**)$是由于$V_i$和$D$都是对角阵，因此有$V_i^TDV_i = V_i^TV_iD=D$。我们得出结论：$\widetilde{{W}}_i$也是最优解。由(\ref{7.5})最优解的唯一性，我们可以得到$W^* = V_iW^*V_i^T$ 。比较等式两边矩阵的第$i$行，可以看出对于任意$i \ne i, W^*_{ij}=0$。 于是$W^*$ 为对角矩阵。(\ref{7.5}) 的最优解由$W^* = diag(w^*)$给定，其中$w^*$为下式的最优解：
+		\begin{equation}
+			\min _{{w}}\left\{F(\operatorname{diag}({w}))+\frac{1}{2}\|\operatorname{diag}({w})-{D}\|_{F}^{2}\right\}
+		\end{equation}
+		由于$F(\operatorname{diag}(w)) = f\left({w}^{\downarrow}\right)=f({w})$ , $\| \operatorname{diag}(w) - D\| ^2_F = \|w - \lambda(X)\|^2_2$，$w^*$可由下式给定：
+		\begin{equation}
+			\mathbf{w}^{*}=\operatorname{argmin}_{{w}}\left\{f({w})+\frac{1}{2}\|{w}-\boldsymbol{\lambda}({X})\|_{2}^{2}\right\}=\operatorname{prox}_{f}(\boldsymbol{\lambda}({X}))
+		\end{equation}
+		因此有$W^* = \operatorname{diag}(\operatorname{prox}_f(\lambda(X)))$，结合(\ref{7.4})，证毕。
+	\end{proof}
+
+	接下来计算一范数的邻近映射：
+	若$g: \mathbb{R}^n \to \mathbb{R}$由$g(x) = \lambda\|x\|_1$定义，其中$\lambda > 0$，则$\operatorname{prox}_g(x) = \mathcal{T}_{\lambda}({x})=[|{x}|-\lambda {e}]_{+} \odot \operatorname{sgn}({x})$
+	
+	\begin{proof}
+		首先有
+		$$
+		g(\mathbf{x})=\sum_{i=1}^{n} \varphi\left(x_{i}\right)
+		$$
+		其中$\varphi(t) = \lambda |t|$。有$\operatorname{prox}_{\varphi}(s) =\mathcal{T}_{\lambda}(s)$. 其中$\mathcal{T}_{\lambda}$定义为：
+		$$
+		\mathcal{T}_{\lambda}(y)=[|y|-\lambda]_{+} \operatorname{sgn}(y)=\left\{\begin{array}{ll}
+			y-\lambda, & y \geq \lambda \\
+			0, & |y|<\lambda \\
+			y+\lambda, & y \leq-\lambda
+		\end{array}\right.
+		$$
+		这里的$\mathcal{T}_{\lambda}$称为软阈值函数。
+		在此定义下，有
+		$$
+		\operatorname{prox}_{g}({x})=\left(\mathcal{T}_{\lambda}\left(x_{j}\right)\right)_{j=1}^{n}
+		$$
+		将软阈值函数的定义扩充到向量空间上，对于任意的$x \in \mathbb{R}^n$，有
+		$$
+		\mathcal{T}_{\lambda}({x}) \equiv\left(\mathcal{T}_{\lambda}\left(x_{j}\right)\right)_{j=1}^{n}=[|{x}|-\lambda {e}]_{+} \odot \operatorname{sgn}({x})
+		$$
+		在此标记下，有
+		$$
+		\operatorname{prox}_g^{(x)} = \mathcal{T}_{\lambda}(x)
+		$$
+		证毕
+	\end{proof}
+	\textbf{根据上面两条定理易得}，$\operatorname{prox}_f(x)=U\operatorname{diag}(\mathcal{T}_{1}(X))U^T$
+	
+	\newpage	
+	\subsection{}
+	共轭函数：$f: \mathbb{E} \to [-\infty, \infty]$的共轭函数$f^*: \mathbb{E} \to [-\infty, \infty]$定义为:
+	$$
+	f^{*}({y})=\max _{{x} \in \mathbb{E}}\{\langle{y}, {x}\rangle-f({x})\}, \quad {y} \in \mathbb{E}^{*},
+	$$
+	
+	首先证明
+	\begin{equation}
+		\delta_C^* = \sigma_C  \label{1.21}
+	\end{equation}
+
+	\begin{proof}
+		令$f = \delta_C$，其中$C \subset \mathbb{E}$ 非空，则对于任意$y \in \mathbb{E}^*$：
+		$$
+		f^{*}({y})=\max _{{x} \in \mathbb{E}}\left\{\langle{y}, {x}\rangle-\delta_{C}(\mathbf{x})\right\}=\max _{{x} \in C}\langle{y}, {x}\rangle=\sigma_{C}({y})
+		$$
+	\end{proof}
+	
+	Moreau分解公式：$f: \mathbb{E} \to [-\infty, \infty]$为封闭的、凸的，则对任意$x \in \mathbb{E}$:
+	\begin{equation}
+	\operatorname{prox}_{ f}({x})+ \operatorname{prox}_{ f^{*}}({x})={x} \label{1.22}
+	\end{equation}
+	
+	令$g:\mathbb{E} \to [-\infty, \infty]$,其中$g(x)=\delta_{C}(x)$，$C$非空，则
+	\begin{equation}
+	\operatorname{prox}_{g}({x})=\operatorname{argmin}_{{u} \in \mathbb{E}}\left\{\delta_{C}({u})+\frac{1}{2}\|{u}-{x}\|^{2}\right\}=\operatorname{argmin}_{{u} \in C}\|{u}-{x}\|^{2}=P_{C}({x}) \label{1.23}
+	\end{equation}
+	
+	利用(\ref{1.21})(\ref{1.22})(\ref{1.23})可得：
+	$$
+	\operatorname{prox}_f(x) = x - P_C(x)
+	$$
+	
+	\newpage
+	\subsection{}
+	注意到$f(x)=\inf _{y \in C}\|x-y\|_{2} = d_C(x)$
+	下面证明：若$C \subset \mathbb{E}$ 为闭的、凸的非空集，$\lambda > 0$，则对于任意$x \in \mathbb{E}$,有
+	\begin{equation}
+		\operatorname{prox}_{\lambda d_{C}}({x})=\left\{\begin{array}{ll}
+			(1-\theta) {x}+\theta P_{C}({x}), & d_{C}({x})>\lambda \\
+			P_{C}({x}), & d_{C}({x}) \leq \lambda
+		\end{array}\right.
+	\end{equation}
+	其中
+	\begin{equation}
+		\theta = \frac{\lambda}{d_C(x)} \label{6.33}
+	\end{equation}
+
+	\begin{proof}
+		记$u = \operatorname{prox}_{\lambda d _C}(x)$, 由邻近映射第二定理，有
+		\begin{equation}
+			{x}-{u} \in \lambda \partial d_{C}({u}) \label{6.34}
+		\end{equation}
+	接下来分两种情况进行讨论：
+	
+	\textbf{Case1}
+	$U \notin C$,(\ref{6.34})等价为
+	\begin{equation}
+		{x}-{u}=\lambda \frac{{u}-P_{C}({u})}{d_{C}({u})}
+	\end{equation}
+	记$\alpha = \frac{\lambda}{d_C(u)}$，公式也可以写为：
+	\begin{equation}
+		{u}=\frac{1}{\alpha+1} {x}+\frac{\alpha}{\alpha+1} P_{C}({u}) \label{6.35}
+	\end{equation}
+	或
+	\begin{equation}
+		{x}-P_{C}({u})=(\alpha+1)\left({u}-P_{C}({u})\right) \label{6.36}
+	\end{equation}
+	由第二投影定理，为证明$P_C(u)=P_C(x)$，只需要证明：
+	\begin{equation}
+		\left\langle\mathbf{x}-P_{C}(\mathbf{u}), \mathbf{y}-P_{C}(\mathbf{u})\right\rangle \leq 0 \text { for any } \mathbf{y} \in C \label{6.37}
+	\end{equation}
+	利用(\ref{6.36}), 我们可以证明(\ref{6.37})等价于：
+	\begin{equation}
+		(\alpha+1)\left\langle{u}-P_{C}({u}), {y}-P_{C}({u})\right\rangle \leq 0 \text { for any } {y} \in C
+	\end{equation}
+	由第二投影定理，这是一个有效的不等式，因此$P_C(u)=P_C(x)$，我们在(\ref{6.36})
+	等式两边同时取范数，有：
+	\begin{equation}
+		d_C(x) = (\alpha + 1)d_C(u) = d_C(u) + \lambda
+	\end{equation}
+	由于$d_C(u)>0$，所以$d_C(x) > \lambda$，于是
+	\begin{equation}
+		\frac{1}{\alpha+1}=\frac{d_{C}({u})}{\lambda+d_{C}({u})}=\frac{d_{C}({x})-\lambda}{d_{C}({x})}=1-\theta
+	\end{equation}
+	其中$\theta$ 由(\ref{6.33})给定。于是(\ref{6.35})也可以表示为：
+	\begin{equation}
+		\operatorname{prox}_{\lambda d_C}(x) = (1 - \theta)x + \theta P_C(x)
+	\end{equation}
+
+	\textbf{Case2}:若$u \in C$，则$u = P_C(x)$。
+	
+	令$v \in C$，由于$u = \operatorname{prox}_{\lambda d_C}(x)$,它遵循如下公式：
+	\begin{equation}
+		\lambda d_C(u) + \frac{1}{2}\|u - x\|^2 \le \lambda d_C(v) + \frac{1}{2}\|v - x\|^2
+	\end{equation}
+	由于$d_C(u)=d_C(v)=0$,
+	$$
+	\|u - x\| \le \|v - x\|
+	$$
+	因此
+	$$
+	u = \arg \min_{v \in C}\|v - x\| = P_C(x)
+	$$
+	优化条件(\ref{6.34})变为：
+	$$
+	\frac{x - P_C(x)}{\lambda} \in N_C(u) \cap B[0,1]
+	$$
+	这通常意味着
+	$$
+	\|\frac{x - P_C(x)}{\lambda}\| \le 1
+	$$ 
+	即
+	$$
+	d_C(x) = \|P_C(x) - x\| \le \lambda
+	$$
+	\end{proof}
+	从而
+	$$
+	\operatorname{prox}_{ d_{C}}({x})=\left\{\begin{array}{ll}
+		(1-\theta) {x}+\theta P_{C}({x}), & d_{C}({x})>1 \\
+		P_{C}({x}), & d_{C}({x}) \leq 1
+	\end{array}\right.
+	$$
+	其中$\theta = \frac{1}{d_C(x)}$
+	
+	也可记为
+	$$
+	\operatorname{prox}_{d_C}(x) = x + \min\{\frac{1}{d_C(x)},1\}(P_C(x)-x)
+	$$
+	
+	\newpage
+	\section{第二题}
+	考虑下述等式约束二次规划问题
+	$$
+	\begin{array}{ll}
+		\min & f(x)=c^{T} x+\frac{1}{2} x^{T} G x \\
+		\text { s.t. } & A x-b=0
+	\end{array}
+	$$
+	其中$G \in \mathbb{S}^n$是$n \times n$的对称矩阵，$A \in \mathfrak{R}^{m \times n}$是行满秩矩阵，$b \in \mathfrak{R}^m$
+	\begin{itemize}
+		\item 写出增广Lagrange方法的$(x^k,\lambda^k)$迭代格式
+		\item 分析$G$与$A$满足什么条件时，增广Lagrange方法是收敛的
+		\item 用$\theta_{r}: \Re^{m} \rightarrow \bar{\Re}$记增广Lagrange函数对偶的目标函数，即
+		$$
+		\theta_{r}(\lambda)=\inf _{x} L_{r}(x, \lambda)
+		$$
+		其中
+		$$
+		L_{r}(x, \lambda)=c^{T} x+\frac{1}{2} x^{T} G x+\lambda^{T}(A x-b)+\frac{r}{2}\|A x-b\|^{2}
+		$$
+		根据$\nabla_{\lambda \lambda}^{2} \theta_{r}(\bar{\lambda})$特征值说明增广Lagrange的收敛速度，当$r$充分大时接近Newton方法的收敛速度。
+	\end{itemize}
+	\subsection{}
+	定义增广拉格朗日函数
+	$$
+	\begin{aligned}
+		L_r(x,\lambda) &= f(x) + \frac{1}{2r}\sum_{i=1}^{n}[(\lambda_i + r(Ax_i - b_i))^2 - \lambda_i^2] \\
+		&= f(x) + \sum_{i=1}^{n}\lambda_i(Ax_i - b_i) + \frac{r}{2}\sum_{i=1}^{n}(Ax_i - b_i)^2 \\
+		&= f(x) + \lambda^T(Ax-b) + \frac{r}{2}(Ax - b)^T(Ax-b) \\
+		& = c^Tx + \frac{1}{2}x^TGx + \lambda^T(Ax-b) + \frac{r}{2}(Ax - b)^T(Ax-b)
+	\end{aligned}
+	$$
+	其迭代格式为：
+	$$
+	\begin{array}{l}
+		x^{k+1} = \arg \min_{x} L_r(x,\lambda^k) \\
+		\lambda^{k+1} = \lambda^k + \alpha (Ax^{k+1} - b)
+	\end{array}
+	$$
+	\subsection{}
+	$G$和$A$应该满足：对于$Ax=b$的任一非零解$z$，存在某个正数$r'$使得当$r \ge r'$时，
+	$$
+	\nabla_{x x}^{2} L_{r}\left(x^{*}, \lambda^{*}\right) \succ 0
+	$$
+	\subsection{}
+	$$
+	\frac{\partial L_r(x,\lambda)}{\partial x} = c^T + x^T G + \lambda^TA + r x^TA^TA - r b^TA
+	$$
+	于是，当$x_* = (r A^TA + G)^{-1}(r A^Tb - A^T \lambda - c)$ 时，$L_r(x,\lambda)$取得最小值，此时有
+	$$
+	\begin{aligned}
+		\theta_r({\lambda}) &= \inf _{x} L_{r}(x, \lambda)  \\
+		&= c^Tx_* + \frac{1}{2}x_*^TGx_* + \lambda ^T Ax_* - \lambda^T b + \frac{r}{2}x_*^TA^TAx_* -r b^TAx + \frac{r}{2}b^Tb \\
+		&= \frac{1}{2} (-r b^TA + \lambda^T A + c^T)x_* + \frac{r}{2}b^T b - \lambda^T b\\
+		&= -\frac{1}{2} (rA^Tb - A^T \lambda - c)^T(r A^TA + G)^{-1}(rA^Tb - A^T \lambda - c) + \frac{r}{2}b^Tb - \lambda^T b
+	\end{aligned}
+	$$
+	计算有
+	$$
+	\nabla_{\lambda \lambda}^{2} \theta_{r}(\bar{\lambda}) = -A(rA^TA+G)^{-1}A^T
+	$$
+	增广Lagrange方法为线性收敛，当r充分大时，为超线性收敛。
+	
+	\newpage
+	\section{第三题}
+	阅读论文“Ying Cui, Chao Ding and Xinyuan Zhao, Quadratic growth conditions for convex matrix optimization problems associated with spectral functions, SIAM J. Optim. Vol. 27, No. 4, 2017, pp. 2332–2355”，详细论述Rockafellar 两篇经典论文在其中起到的作用。
+	
+	A：Augmented Lagrangians and applications of the proximal point algorithm
+	in convex programming, Mathematics of Operations Research。
+	
+	B:Monotone operators and the proximal point algorithm, SIAM Journal
+	on Control and Optimization,
+	
+	在A中，Rockafellar论述了求解凸优化问题中的ALM方法的收敛速度，表明ALM方法是非精确双近点算法(PPA)的一种特殊情况。在证明命题19时，应用了A中命题六的证明思路，表明了ALM方法和PPA方法生成的迭代序列之间的关系。在证明定理20时，可以从A中的定理4获得整个序列的有界性和收敛性。在B中，Rockafellar确定了Lipschitz连续的$\mathcal{T}_{\phi}^{-1}$在原点处不精确PPA的收敛速度。
+\end{document}
