@@ -1,0 +1,18 @@
+%% Returns the one - dimensional wavelet transformation of any 1D array of
+%% the length of the power of 2.
+
+
+function C = TwoDHaarTransform(B)
+
+[m n]=size(B);
+for i=1:m
+    Row=OneDHaarTransform(B(i,:));
+    B(i,:)=Row;
+end
+for i=1:n
+    Row=OneDHaarTransform(B(:,i));
+    B(i,:)=Row;
+end
+C=B;
+
+end

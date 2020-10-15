@@ -1,0 +1,20 @@
+function C = OneDHaarCompress(B,e)
+
+A = sort(B);
+l=length(B);
+j=1;
+sum=0;
+for k=1:j
+    sum=sum+(A[k]^2;
+    if sum<=e
+        j=j+1;
+        continue;
+    else
+        break;
+    end
+        
+end
+for i=1:j-1
+    B=B(find(B~=A[i]));
+end
+end

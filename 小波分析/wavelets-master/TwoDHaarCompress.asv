@@ -1,0 +1,5 @@
+function B = NewTwoDHaarCompress(A, error)
+
+l=length(A(:));
+min = min(A(:));
+find(ismember(A(:), min));
