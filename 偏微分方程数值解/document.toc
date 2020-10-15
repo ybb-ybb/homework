@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}简介}{2}%
+\contentsline {section}{\numberline {2}椭圆形偏微分方程求解}{3}%
+\contentsline {subsection}{\numberline {2.1}快速DST方法求解}{5}%
+\contentsline {subsection}{\numberline {2.2}二维的紧致差分格式}{6}%
+\contentsline {subsection}{\numberline {2.3}迭代求解法}{7}%
+\contentsline {section}{\numberline {3}双曲线形的偏微分方程求解}{10}%
+\contentsline {subsection}{\numberline {3.1}迎风格式}{10}%
+\contentsline {subsection}{\numberline {3.2}Lax-Friedrichs格式}{11}%
+\contentsline {subsection}{\numberline {3.3}Lax-Wendroff格式}{12}%
+\contentsline {subsection}{\numberline {3.4}实验结果及分析}{13}%
+\contentsline {section}{\numberline {4}抛物线形的偏微分方程求解}{15}%
+\contentsline {subsection}{\numberline {4.1}实验结果}{15}%
